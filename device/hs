@@ -1,0 +1,62 @@
+#!/system/bin/sh
+# 用法: hs [on|off|status|log|restart|test]
+D=/data/adb/hotspot
+case "$1" in
+  on)  nohup setsid sh $D/run.sh </dev/null >/dev/null 2>&1 & sleep 1; echo started ;;
+  off) [ -f $D/run.pid ] && kill "$(cat $D/run.pid)" 2>/dev/null; killall mihomo 2>/dev/null
+       for i in ap0 softap0 ap1 wlan1 wlan2; do
+         iptables -t mangle -D PREROUTING -i $i -j SB 2>/dev/null
+       done
+       iptables -t mangle -F SB 2>/dev/null; iptables -t mangle -X SB 2>/dev/null
+       for i in ap0 softap0 ap1 wlan1 wlan2; do
+         iptables -t nat -D PREROUTING -i $i -p udp --dport 53 -j REDIRECT --to-ports 1053 2>/dev/null
+         iptables -t nat -D PREROUTING -i $i -p tcp --dport 53 -j REDIRECT --to-ports 1053 2>/dev/null
+       done
+       ip rule del fwmark 0x2025/0x2025 lookup 100 2>/dev/null
+       ip route flush table 100 2>/dev/null
+       rm -f $D/run.pid; echo "stopped" ;;
+  probe)
+    echo "core=$(pidof mihomo 2>/dev/null | awk '{print $1}')"
+    echo "tun=$(ip -o link 2>/dev/null | awk -F': ' '/: (Meta|tun[0-9])/{print $2; exit}')"
+    IF=""
+    for i in ap0 softap0 ap1 wlan1 wlan2; do ip link show "$i" >/dev/null 2>&1 && { IF=$i; break; }; done
+    echo "iface=$IF"
+    echo "iface_ip=$(ip -o -4 addr show "$IF" 2>/dev/null | awk '{print $4}')"
+    echo "rule=$(ip rule 2>/dev/null | grep -c 'fwmark 0x2025')"
+    echo "hook=$(iptables -t mangle -S PREROUTING 2>/dev/null | grep -c 'j SB')"
+    echo "tcp=$(iptables -t mangle -L SB -n -v 2>/dev/null | awk '$4=="tcp" && /TPROXY/{print $1}')"
+    echo "udp=$(iptables -t mangle -L SB -n -v 2>/dev/null | awk '$4=="udp" && /TPROXY/{print $1}')"
+    uid=$(dumpsys connectivity 2>/dev/null | grep -o "Active default network: [0-9]*" | grep -o "[0-9]*" | head -1)
+    up=""
+    [ -n "$uid" ] && up=$(dumpsys connectivity 2>/dev/null | grep "NetworkAgentInfo{network{$uid}" | grep -o "InterfaceName: [A-Za-z0-9_]*" | head -1 | awk '{print $2}')
+    echo "up=$up"
+    echo "cmfa=$(pidof com.github.metacubex.clash.meta 2>/dev/null | wc -w)"
+    echo "mode=$(curl -s -m 3 http://127.0.0.1:9091/configs 2>/dev/null | grep -o '\"mode\":\"[a-z]*\"' | cut -d'\"' -f4)"
+    ;;
+  status) echo "== core"; pidof mihomo || echo "not running"; echo "== tun"; ip -o link | grep -E "Meta|tun[0-9]" | cut -d: -f2 || echo none
+          echo "== hotspot iface"; ip -o -4 addr show | grep -E "wlan2|ap0|softap" || echo none
+          echo "== rule"; ip rule | grep 0x2025 || echo none
+          echo "== counters"; iptables -t mangle -L SB -n -v 2>/dev/null | head -4 ;;
+  log) tail -n ${2:-30} $D/log/run.log; echo "---- core"; tail -n ${2:-30} $D/log/core.log ;;
+  mode) m=$2
+        case "$m" in global|rule|direct) ;; *) echo "usage: hs mode global|rule|direct"; exit 1 ;; esac
+        curl -s -m 5 -X PATCH -H "Content-Type: application/json" -d "{\"mode\":\"$m\"}" \
+             http://127.0.0.1:9091/configs >/dev/null
+        sed -i "s/^mode:.*/mode: $m/" $D/config.yaml 2>/dev/null
+        # 全局模式下 GLOBAL 组默认可能是 DIRECT（等于没代理），自动挑到规则里的 MATCH 目标
+        if [ "$m" = global ]; then
+          now=$(curl -s -m 3 http://127.0.0.1:9091/proxies/GLOBAL | grep -o '"now":"[^"]*"' | cut -d'"' -f4)
+          if [ "$now" = DIRECT ] || [ "$now" = REJECT ] || [ -z "$now" ]; then
+            tgt=$(grep -m1 '^  - MATCH' $D/config.yaml | sed 's/.*,//' | tr -d ' \r')
+            [ -n "$tgt" ] || tgt=Proxies
+            curl -s -m 5 -X PUT -H "Content-Type: application/json" \
+                 -d "{\"name\":\"$tgt\"}" http://127.0.0.1:9091/proxies/GLOBAL >/dev/null
+            echo "global-select=$tgt"
+          fi
+        fi
+        echo "mode=$m" ;;
+  regen) sh $D/regen.sh && $0 restart ;;
+  restart) $0 off; sleep 1; $0 on ;;
+  test) curl -s -m 8 https://api.ip.sb/ip; echo ;; 
+  *) echo "usage: hs on|off|status|log|restart|test" ;;
+esac

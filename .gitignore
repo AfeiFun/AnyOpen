@@ -1,0 +1,22 @@
+# 构建产物
+app/build/
+app/app/build/
+app/.gradle/
+.gradle/
+*.iml
+.idea/
+
+# 本机配置
+app/local.properties
+
+# 敏感：不要提交你自己的订阅/节点配置
+config.yaml
+config-tproxy.yaml
+*.yaml
+!app/**/*.yaml
+
+# 二进制与打包产物
+mihomo
+*.apk
+*.zip
+*.gz
