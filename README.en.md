@@ -1,5 +1,8 @@
 # AnyOpen
 
+[![checks](https://github.com/AfeiFun/AnyOpen/actions/workflows/checks.yml/badge.svg)](https://github.com/AfeiFun/AnyOpen/actions/workflows/checks.yml)
+[![release](https://img.shields.io/github/v/release/AfeiFun/AnyOpen)](https://github.com/AfeiFun/AnyOpen/releases)
+
 > Turn a rooted Android phone into a **hotspot gateway with transparent proxying**. Clients that join the hotspot go through your proxy automatically — no per-device app, no manual proxy settings.
 
 ![console](docs/screenshots/app.png)

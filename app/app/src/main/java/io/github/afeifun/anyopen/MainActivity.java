@@ -1,4 +1,4 @@
-package dev.fly.hotspotctl;
+package io.github.afeifun.anyopen;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -132,14 +132,14 @@ public class MainActivity extends Activity {
         headText.setOrientation(LinearLayout.VERTICAL);
 
         TextView title = new TextView(this);
-        title.setText("热点代理");
+        title.setText("AnyOpen");
         title.setTextColor(TEXT);
         title.setTextSize(26);
         title.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
         headText.addView(title);
 
         TextView sub = new TextView(this);
-        sub.setText("Mi 10S · 单核心 mihomo · 热点客户端零配置");
+        sub.setText("热点透明代理 · 单核心 mihomo · 客户端零配置");
         sub.setTextColor(DIM);
         sub.setTextSize(13);
         sub.setPadding(0, dp(4), 0, 0);

@@ -1,5 +1,11 @@
 # AnyOpen
 
+[![checks](https://github.com/AfeiFun/AnyOpen/actions/workflows/checks.yml/badge.svg)](https://github.com/AfeiFun/AnyOpen/actions/workflows/checks.yml)
+[![release](https://img.shields.io/github/v/release/AfeiFun/AnyOpen)](https://github.com/AfeiFun/AnyOpen/releases)
+[![license](https://img.shields.io/github/license/AfeiFun/AnyOpen)](LICENSE)
+
+<img src="docs/screenshots/icon.png" width="88" align="right" />
+
 > 把一台 Root 过的安卓手机，变成**带透明代理的热点网关**：客户端连上热点就全局走代理，不需要在每台设备上装 App 或填代理。
 
 ![控制台](docs/screenshots/app.png)
@@ -64,6 +70,8 @@ adb install -r app/app/build/outputs/apk/debug/app-debug.apk
 
 ## 控制 App
 
+包名 `io.github.afeifun.anyopen`，纯 Java、零第三方依赖，APK 仅 ~30 KB。
+
 | 区域 | 说明 |
 |---|---|
 | 状态卡 | 核心 PID、tun 设备、上游网卡、热点网段、TPROXY 是否挂载、转发计数（3 秒刷新） |
@@ -127,7 +135,7 @@ docs/       架构说明与排错手册
 
 ```sh
 su -c 'sh /data/adb/hotspot/hs off; rm -rf /data/adb/hotspot /data/adb/service.d/99-hotspot-proxy.sh'
-adb uninstall dev.fly.hotspotctl
+adb uninstall io.github.afeifun.anyopen
 ```
 
 ## 协议

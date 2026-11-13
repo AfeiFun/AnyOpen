@@ -8,5 +8,5 @@ cd "$(dirname "$0")/../app"
 export JAVA_HOME ANDROID_HOME
 
 echo "sdk.dir=$ANDROID_HOME" > local.properties
-./gradlew assembleDebug
+./gradlew --no-daemon assembleDebug
 echo "产物: app/build/outputs/apk/debug/app-debug.apk"

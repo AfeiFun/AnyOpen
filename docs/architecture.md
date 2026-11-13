@@ -9,7 +9,7 @@
 | `hs` | `/data/adb/hotspot/hs` | 命令行：status / probe / on / off / restart / mode / regen / log / test |
 | `regen.sh` | `/data/adb/hotspot/regen.sh` | 从订阅生成配置（先 `mihomo -t` 校验再替换） |
 | `service.d` | `/data/adb/service.d/99-hotspot-proxy.sh` | 开机拉起 `run.sh` |
-| App | `dev.fly.hotspotctl` | 状态展示与控制，全部操作走 root shell |
+| App | `io.github.afeifun.anyopen` | 状态展示与控制，全部操作走 root shell |
 
 ## 端口
 

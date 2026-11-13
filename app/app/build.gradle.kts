@@ -1,15 +1,15 @@
 plugins { id("com.android.application") }
 
 android {
-    namespace = "dev.fly.hotspotctl"
+    namespace = "io.github.afeifun.anyopen"
     compileSdk = 35
     buildToolsVersion = "35.0.0"
     defaultConfig {
-        applicationId = "dev.fly.hotspotctl"
+        applicationId = "io.github.afeifun.anyopen"
         minSdk = 26
         targetSdk = 35
-        versionCode = 7
-        versionName = "1.6"
+        versionCode = 8
+        versionName = "1.7"
     }
     signingConfigs {
         getByName("debug") {

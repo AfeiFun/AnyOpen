@@ -1,4 +1,4 @@
-package dev.fly.hotspotctl;
+package io.github.afeifun.anyopen;
 
 import android.app.Activity;
 import android.graphics.Color;

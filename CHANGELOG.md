@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.7.0
+
+- App 更名 **AnyOpen**，包名改为 `io.github.afeifun.anyopen`（旧的 `dev.fly.hotspotctl` 需卸载重装）
+- 新增自适应图标：深色圆底 + 绿色信号弧，含 Android 13 主题图标与单色变体
+- 构建脚本改用 `--no-daemon`，避免残留守护进程占用文件锁
+- README 增加构建状态徽章与图标
+
 ## v1.6.0
 
 控制 App
