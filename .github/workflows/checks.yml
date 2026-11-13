@@ -1,0 +1,29 @@
+name: checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Shell 语法检查
+        run: |
+          set -e
+          for f in device/*.sh device/hs; do
+            echo "sh -n $f"; sh -n "$f"
+          done
+          for f in scripts/*.sh; do
+            echo "bash -n $f"; bash -n "$f"
+          done
+      - name: 确认没有提交订阅/节点配置
+        run: |
+          set -e
+          if git ls-files | grep -qE '(^|/)config(-tproxy)?\.yaml$'; then
+            echo "::error::仓库里不应该出现订阅配置文件"
+            exit 1
+          fi
+          echo "ok"
